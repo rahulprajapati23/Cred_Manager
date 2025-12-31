@@ -323,8 +323,17 @@ class App:
 
     def get_credentials(self):
         path = self.cm.config.get("data_path")
+        
         if not os.path.exists(path):
-            return {}
+            print(f"[Debug] Configured path not found: {path}")
+            # Fallback: Check if file exists in current directory
+            local_name = os.path.basename(path)
+            if os.path.exists(local_name):
+                 print(f"[Debug] Found local backup: {local_name}. Using it.")
+                 path = local_name
+            else:
+                 print(f"[Error] Credential file not found.")
+                 return {}
         
         with open(path, 'rb') as f:
             encrypted_data = f.read()
@@ -333,7 +342,8 @@ class App:
             decrypted_data = self.cm.fernet.decrypt(encrypted_data)
             return json.loads(decrypted_data)
         except Exception as e:
-            print("Error decrypting data file:", e)
+            print(f"[Critical] Decryption failed: {e}")
+            print("Ensure you have the correct 'key.key' file.")
             return {}
 
     def save_credentials(self, data):
