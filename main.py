@@ -186,16 +186,23 @@ class App:
         self.is_setup = self.cm.load()
 
     def run_railfence_challenge(self):
-        print("\n--- SECURITY CHALLENGE ---")
+        print("\n--- SECURITY CHALLENGE (Rail Fence Cipher) ---")
         challenge_text = SentenceGenerator.generate()
-        # Ensure it's long enough or pad if needed, but generator is usually fine
-        # Rail Fence with depth 4 needs enough chars to make sense
         
-        encrypted = RailFence.encrypt(challenge_text, depth=4)
-        print(f"Decrypt this Ciphertext")
+        # WE ARE USING DEPTH = 2 (Easier)
+        # Logic: Write diagonal down, then diagonal up.
+        # Example: "HELLO" (Depth 2)
+        # H . L . O  -> HLO
+        # . E . L .  -> EL
+        # Result: HLOEL
+        
+        depth = 2
+        encrypted = RailFence.encrypt(challenge_text, depth=depth)
+        print(f"Decrypt this Ciphertext (Depth: {depth})")
+        print(f"HINT: The text is split into {depth} rails. Read characters in a zig-zag pattern.")
         print(f"[{encrypted}]")
         
-        user_input = input("Enter the decrypted Plaintext (This acts as your dynamic key): ").strip()
+        user_input = input("Enter the decrypted Plaintext: ").strip()
         
         # Verify
         if user_input == challenge_text:
