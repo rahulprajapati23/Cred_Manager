@@ -741,8 +741,14 @@ if __name__ == "__main__":
             app = App()
             app.start()
         except Exception as e:
-             print(f"GUI Error: {e}")
-             input("Press Enter to exit...")
+             print(f"\n[GUI Launch Failed]: {e}")
+             if "no display name" in str(e).lower() or "tkinter" in str(e).lower():
+                 print("Hint: To run GUI on Termux, you need an XServer App (like Termux:X11) and 'pkg install python-tkinter'.")
+             
+             print("Falling back to CLI mode automatically...\n")
+             time.sleep(2)
+             app = App()
+             app.start()
     else:
         app = App()
         app.start()
