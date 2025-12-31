@@ -16,9 +16,16 @@ try:
     from cryptography.fernet import Fernet
     from cryptography.hazmat.primitives import hashes
     from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-except ImportError as e:
-    print(f"Error: Missing dependency {e.name}. Please run 'pip install pyotp cryptography qrcode google-generativeai'")
-    exit(1)
+except ImportError:
+    print("Standard libraries not found. Attempting to use local pure-python fallbacks...")
+    try:
+        from libs import pure_otp as pyotp
+        from libs.pure_fernet import Fernet
+        qrcode = None # Optional for Termux
+        print("Success: Using local pure-python libraries (Portable Mode).")
+    except ImportError as e:
+        print(f"Error: Missing dependency {e}. Please run 'pip install -r requirements.txt'")
+        exit(1)
 
 
 class GitSync:
@@ -235,13 +242,16 @@ class App:
         uri = totp.provisioning_uri(name=getpass.getuser(), issuer_name="PasswordManager")
         
         print("\nScan this QR Code in your Microsoft Authenticator App:")
-        qr = qrcode.QRCode()
-        qr.add_data(uri)
-        qr.make(fit=True)
-        f = io.StringIO()
-        qr.print_ascii(out=f, invert=True)
-        f.seek(0)
-        print(f.read())
+        if qrcode:
+            qr = qrcode.QRCode()
+            qr.add_data(uri)
+            qr.make(fit=True)
+            f = io.StringIO()
+            qr.print_ascii(out=f, invert=True)
+            f.seek(0)
+            print(f.read())
+        else:
+             print("[QR Code library missing. Please enter secret manually]")
         
         print(f"Or enter manually: Secret Key: {secret}")
         input("Press Enter after you have added this NEW account to your Authenticator app...")
@@ -351,13 +361,16 @@ class App:
         uri = totp.provisioning_uri(name=getpass.getuser(), issuer_name="PasswordManager")
         
         print("\nScan this QR Code in your Microsoft Authenticator App:")
-        qr = qrcode.QRCode()
-        qr.add_data(uri)
-        qr.make(fit=True)
-        f = io.StringIO()
-        qr.print_ascii(out=f, invert=True)
-        f.seek(0)
-        print(f.read())
+        if qrcode:
+            qr = qrcode.QRCode()
+            qr.add_data(uri)
+            qr.make(fit=True)
+            f = io.StringIO()
+            qr.print_ascii(out=f, invert=True)
+            f.seek(0)
+            print(f.read())
+        else:
+            print("[QR Code library missing. Please enter secret manually]")
         
         print(f"Or enter manually: Secret Key: {secret}")
         input("Press Enter after adding to Microsoft Authenticator...")
