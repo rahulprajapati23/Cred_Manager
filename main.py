@@ -215,6 +215,7 @@ class App:
         secret = self.cm.config.get("otp_secret")
         if not secret:
             print("Error: OTP secret not found in config.")
+            print("Hint: If running on a new device, ensure you have copied 'pm_config.json' from the original device.")
             return False
             
         totp = pyotp.TOTP(secret)
