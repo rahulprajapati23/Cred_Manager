@@ -214,8 +214,18 @@ class App:
     def verify_otp(self):
         secret = self.cm.config.get("otp_secret")
         if not secret:
-            print("Error: OTP secret not found in config.")
-            print("Hint: If running on a new device, ensure you have copied 'pm_config.json' from the original device.")
+            print(f"\n[CRITICAL ERROR]: OTP secret not found in config.")
+            print(f"Debug Info:")
+            print(f"  - Current Directory: {os.getcwd()}")
+            print(f"  - Looking for Config at: {os.path.abspath(self.cm.config_path)}")
+            
+            if os.path.exists(self.cm.config_path):
+                print(f"  - Config File Status: FOUND [Size: {os.path.getsize(self.cm.config_path)} bytes]")
+                print("  - Problem: The file exists but 'otp_secret' is missing inside it.")
+                print("    Did you overwrite it with a fresh setup? You may need to copy it again.")
+            else:
+                print("  - Config File Status: MISSING (File not found)")
+                print("  - Solution: You MUST copy 'pm_config.json' from your PC to this folder.")
             return False
             
         totp = pyotp.TOTP(secret)
@@ -693,5 +703,7 @@ class App:
         self.main_menu()
 
 if __name__ == "__main__":
+    # Ensure we are running in the script's directory so relative paths work
+    os.chdir(os.path.dirname(os.path.abspath(__file__)))
     app = App()
     app.start()
