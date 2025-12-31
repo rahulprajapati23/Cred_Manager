@@ -722,5 +722,27 @@ class App:
 if __name__ == "__main__":
     # Ensure we are running in the script's directory so relative paths work
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
-    app = App()
-    app.start()
+    
+    # Mode Selection
+    print("Select Mode:")
+    print("1. CLI (Command Line)")
+    print("2. GUI (Graphical Interface)")
+    mode = input("Choice [1/2]: ").strip()
+    
+    if mode == '2':
+        try:
+            print("Launching GUI...")
+            from libs.gui import PasswordManagerGUI
+            gui = PasswordManagerGUI()
+            gui.run()
+        except ImportError as e:
+            print(f"Failed to load GUI: {e}")
+            print("Falling back to CLI...")
+            app = App()
+            app.start()
+        except Exception as e:
+             print(f"GUI Error: {e}")
+             input("Press Enter to exit...")
+    else:
+        app = App()
+        app.start()
