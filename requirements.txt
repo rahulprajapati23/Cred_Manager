@@ -1,3 +1,4 @@
 cryptography
 pyotp
 qrcode
+streamlit
